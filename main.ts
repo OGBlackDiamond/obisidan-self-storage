@@ -1,5 +1,6 @@
-import { Plugin } from "obsidian";
+import { Plugin, TAbstractFile } from "obsidian";
 import { ConfigUtil } from "utils/config_util"
+import { WebSocketUtil } from "utils/websocket_util"
 
 interface Settings {
 	serverIP: string;
@@ -15,12 +16,35 @@ export default class ObsidianSelfStorage extends Plugin {
 
 	settings: Settings;
 
+	websocket: WebSocketUtil;
+
 	async onload() {
 		console.log("Loading Obsidian Self Storage");
 
 		await this.loadSettings();
 
 		this.addSettingTab(new ConfigUtil(this.app, this));
+
+		this.websocket = new WebSocketUtil(this.settings.serverIP);
+
+		this.websocket.init_websocket();
+
+		this.registerEvent(this.app.vault.on('create', (file: TAbstractFile) => {
+			console.log("Created File: " + file.name);	
+		}));
+
+		this.registerEvent(this.app.vault.on('delete', () => {
+			
+		}));
+		
+		this.registerEvent(this.app.vault.on('rename', (file: TAbstractFile) => {
+			console.log("Renamed File: " + file.name);	
+		}));
+
+		this.registerEvent(this.app.vault.on('modify', () => {
+			
+		}));
+
 	}
 
 	async loadSettings() {
