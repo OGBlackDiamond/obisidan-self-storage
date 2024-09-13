@@ -1,6 +1,7 @@
 import { Plugin, TAbstractFile } from "obsidian";
 import { ConfigUtil } from "utils/config_util"
 import { WebSocketUtil } from "utils/websocket_util"
+import { FileUtil } from "utils/file_util"
 
 interface Settings {
 	serverIP: string;
@@ -18,6 +19,8 @@ export default class ObsidianSelfStorage extends Plugin {
 
 	websocket: WebSocketUtil;
 
+	unnamedFiles: string[];
+
 	async onload() {
 		console.log("Loading Obsidian Self Storage");
 
@@ -31,6 +34,11 @@ export default class ObsidianSelfStorage extends Plugin {
 
 		this.registerEvent(this.app.vault.on('create', (file: TAbstractFile) => {
 			console.log("Created File: " + file.name);	
+			if (file.name.slice(0, 8) == "Untitled") {
+				this.unnamedFiles.push(file.name);
+			} else {
+
+			}
 		}));
 
 		this.registerEvent(this.app.vault.on('delete', () => {
